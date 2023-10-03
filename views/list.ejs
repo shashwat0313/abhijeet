@@ -15,12 +15,12 @@
   <!-- <h3 >Tasks: </h3> -->
   <form action="/checked" method="post">
 
-    <div class="box taskContainer" style="overflow-y:hidden; height:400px;">
+    <div class="box taskContainer" style="overflow-y:hidden;">
 
       <% for( let index = 0; index < taskArray.length; index++ ) { %>
       <div class="item">
-        <input type="checkbox" name="item" onchange="this.form.submit()" value="<%=taskArray[index].name%>">
-        <p>
+        <input id="itemcheckbox" type="checkbox" name="item" onchange="this.form.submit()" value="<%=taskArray[index].name%>">
+        <p id="itemtext">
           <%= taskArray[index].name %>
         </p>
       </div>
@@ -29,7 +29,7 @@
   </div>
 
   <div class="box addingTask">
-    <form action="<%= routeName %>" method="post" class="item">
+    <form class="addTaskForm" action="<%= routeName %>" method="post" class="item">
 
       <input class="textbox" type="text" name="task" placeholder="New Task" autocomplete="off">
       <button type="submit" name="list" value=<%=dayvalue%>>+</button>
@@ -38,8 +38,10 @@
   </div>
 
   
-  <div class="box" onclick=" window.location.href = '/manage' ">
-    Manage Lists
+  <div class="box manageButton" onclick=" window.location.href = '/manage' ">
+    <div class="manageButtonText">
+      Manage Lists
+    </div>
   </div>
 
 

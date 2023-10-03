@@ -7,20 +7,66 @@ const { redirect } = require('express/lib/response');
 const app = express();
 const date = require(__dirname + '/date.js');
 const mongoose = require("mongoose");
+const mongostore = require('connect-mongo')
+const passport = require('passport');
+const session = require('express-session')
+
+//mongoose connection
+mongoose.connect("mongodb://127.0.0.1:27017/todolistv3-1").then((x)=>{
+});
+// const accounts = require('./accounts')
+const accounts2 = require('./accounts2')
 /////////////////////////////////////////////////////////////////////////////////
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.use(express.static('public'))
-mongoose.connect("mongodb+srv://shashwat:pvA0u3cA7M5Jtx01@cluster0.gobnuc1.mongodb.net/todolistV3").then((x)=>{
-    // console.log(x);
+app.use(express.json())
+app.use(passport.initialize());
+app.use(passport.session());
+
+const sessionStore = mongostore.create({ mongoUrl: "mongodb://127.0.0.1:27017/todolistv3-1", collectionName: 'sessions' })
+
+
+//Session Middleware
+app.use(session({
+    secret: "hellobhosdike",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 180 //180 days
+    },
+    store: sessionStore
+}));
+
+
+//passport setup
+
+// used to serialize the user for the session
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
 });
+
+// used to deserialize the user
+passport.deserializeUser(async function (id, done) {
+    try {
+        const user = await User.findById(id).exec();
+        done(null, user);
+    } catch (error) {
+        done(error, null);
+    }
+});
+
+
 /////////////////////////////////////////////////////////////////////////////////
 
 let arr = []
 let lastURL = ""
 
 //db structures
+
+// app.use('/accounts', accounts)
+app.use('/accounts', accounts2)
 
 const itemSchema = new mongoose.Schema({
     name: String
@@ -100,29 +146,3 @@ app.get('/about', (req, res)=>{
 app.listen(process.env.PORT || 3000, () => {
     console.log(`online`);
 });
-
-
-// const item1 = new Item({
-//     name: "item1"
-// })
-// const item2 = new Item(
-//     {
-//         name:"item2"
-//     }
-// )
-
-// Item.create(item1).then((x)=>{
-    //     console.log("insertion succesful");
-    // }).catch((z)=>{
-        //     console.log("something went wrong... " + z);
-        // // })
-        
-        
-        
-        // List.create({ListName:"list1", Items:[item1, item2]}).then((x)=>{
-            //     console.log("insertion succesful");
-            // }).catch((z)=>{
-//     console.log("something went wrong... " + z);
-// })
-
-// List.updateOne()
